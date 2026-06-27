@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>ATEEM Crystal AI</title>
+
+<style>
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: radial-gradient(circle at center, #0b0f1a, #05070d);
+}
+
+/* canvas fix */
+canvas {
+  display: block;
+}
+</style>
+</head>
+
+<body>
+
+<script src="https://unpkg.com/three@0.160.0/build/three.min.js"></script>
+
+<script>
+/* =========================
+   SCENE SETUP
+========================= */
+
+const scene = new THREE.Scene();
+
+/* CAMERA */
+const camera = new THREE.PerspectiveCamera(
+  50,
+  window.innerWidth / window.innerHeight,
+  0.1,
+  100
+);
+camera.position.z = 3;
+
+/* RENDERER */
+const renderer = new THREE.WebGLRenderer({
+  alpha: true,
+  antialias: true
+});
+
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.setPixelRatio(window.devicePixelRatio);
+renderer.setClearColor(0x000000, 0);
+
+document.body.appendChild(renderer.domElement);
+
+/* =========================
+   CRYSTAL CORE
+========================= */
+
+const geometry = new THREE.SphereGeometry(1, 128, 128);
+
+const material = new THREE.MeshPhysicalMaterial({
+  color: 0xf5f0e8,
+
+  roughness: 0.05,
+  metalness: 0.0,
+
+  transmission: 1.0,
+  thickness: 2.5,
+
+  ior: 1.5,
+  clearcoat: 1.0,
+  clearcoatRoughness: 0.05,
+
+  emissive: new THREE.Color(0xb8936a),
+  emissiveIntensity: 0.15
+});
+
+const core = new THREE.Mesh(geometry, material);
+scene.add(core);
+
+/* =========================
+   LIGHTING (IMPORTANT)
+========================= */
+
+const ambient = new THREE.AmbientLight(0xffffff, 1.2);
+scene.add(ambient);
+
+const keyLight = new THREE.PointLight(0xffffff, 2.5);
+keyLight.position.set(3, 3, 3);
+scene.add(keyLight);
+
+const goldLight = new THREE.PointLight(0xd4a97a, 2);
+goldLight.position.set(-3, -2, 2);
+scene.add(goldLight);
+
+const blueLight = new THREE.PointLight(0x88cfff, 1.2);
+blueLight.position.set(0, 3, -3);
+scene.add(blueLight);
+
+/* =========================
+   ANIMATION LOOP
+========================= */
+
+function animate() {
+  requestAnimationFrame(animate);
+
+  core.rotation.y += 0.003;
+  core.rotation.x += 0.0015;
+
+  // breathing effect
+  const breathe = 1 + Math.sin(Date.now() * 0.002) * 0.04;
+  core.scale.set(breathe, breathe, breathe);
+
+  renderer.render(scene, camera);
+}
+
+animate();
+
+/* =========================
+   RESPONSIVE FIX
+========================= */
+
+window.addEventListener("resize", () => {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+});
+</script>
+
+</body>
+</html>
