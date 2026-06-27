@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ATEEM Ultra Crystal</title>
+
+<style>
+body {
+  margin: 0;
+  overflow: hidden;
+  background: radial-gradient(circle at 30% 20%, #142033, #05070d);
+}
+
+#wrap {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* glass ring */
+.ring {
+  position: absolute;
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  border: 1px solid rgba(212,169,122,0.35);
+  box-shadow: 0 0 40px rgba(184,147,106,0.2);
+  animation: spin 12s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+</style>
+</head>
+
+<body>
+
+<div id="wrap">
+  <div class="ring"></div>
+</div>
+
+<script src="https://unpkg.com/three@0.160.0/build/three.min.js"></script>
+
+<script>
+const scene = new THREE.Scene();
+
+const camera = new THREE.PerspectiveCamera(55, window.innerWidth/window.innerHeight, 0.1, 100);
+camera.position.z = 2.6;
+
+const renderer = new THREE.WebGLRenderer({
+  alpha: true,
+  antialias: true
+});
+
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.setPixelRatio(window.devicePixelRatio);
+document.body.appendChild(renderer.domElement);
+
+/* 💎 CORE CRYSTAL (FIXED LOOK) */
+const geometry = new THREE.SphereGeometry(0.9, 96, 96);
+
+const material = new THREE.MeshPhysicalMaterial({
+  color: 0xf5ead7,
+  roughness: 0.05,
+  metalness: 0.1,
+  transmission: 0.95,
+  thickness: 2.5,
+  clearcoat: 1,
+  clearcoatRoughness: 0.05,
+  envMapIntensity: 1.2
+});
+
+const core = new THREE.Mesh(geometry, material);
+scene.add(core);
+
+/* 💡 LIGHT SYSTEM (IMPORTANT FIX) */
+const ambient = new THREE.AmbientLight(0xffffff, 1.5);
+scene.add(ambient);
+
+const keyLight = new THREE.PointLight(0xffffff, 2.5);
+keyLight.position.set(3, 3, 3);
+scene.add(keyLight);
+
+const goldLight = new THREE.PointLight(0xd4a97a, 2);
+goldLight.position.set(-3, -1, 2);
+scene.add(goldLight);
+
+/* ✨ ANIMATION */
+function animate(){
+  requestAnimationFrame(animate);
+
+  core.rotation.y += 0.003;
+  core.rotation.x += 0.0015;
+
+  // breathing effect
+  const s = 1 + Math.sin(Date.now() * 0.002) * 0.03;
+  core.scale.set(s, s, s);
+
+  renderer.render(scene, camera);
+}
+
+animate();
+
+/* resize */
+window.addEventListener("resize", () => {
+  renderer.setSize(window.innerWidth, window.innerHeight);
+});
+</script>
+
+</body>
+</html>
