@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>ATEEM Ultra Stable</title>
+<title>ATEEM FINAL FIX</title>
 
 <style>
 html, body {
@@ -13,13 +13,9 @@ html, body {
   background: radial-gradient(circle at center, #0b0f1a, #05070d);
 }
 
-/* 🔥 IMPORTANT FIX: force full container stability */
 #wrap {
-  width: 100vw;
-  height: 100vh;
   position: fixed;
-  top: 0;
-  left: 0;
+  inset: 0;
 }
 canvas {
   display: block;
@@ -34,57 +30,36 @@ canvas {
 <script src="https://unpkg.com/three@0.160.0/build/three.min.js"></script>
 
 <script>
-/* =========================
-   FIXED RENDER TARGET
-========================= */
-
 const container = document.getElementById("wrap");
 
 const scene = new THREE.Scene();
 
-const camera = new THREE.PerspectiveCamera(
-  50,
-  1,
-  0.1,
-  100
-);
+const camera = new THREE.PerspectiveCamera(50, 1, 0.1, 100);
 camera.position.z = 3.2;
 
-/* 🔥 FIX: no window-based sizing */
+/* 🔥 IMPORTANT: FIXED RENDER SIZE (NO RESIZE EVENTS EVER) */
+const RENDER_SIZE = 512; // ثابت 100%
+
 const renderer = new THREE.WebGLRenderer({
   antialias: true,
   alpha: true
 });
 
-/* IMPORTANT: lock pixel ratio */
+renderer.setSize(RENDER_SIZE, RENDER_SIZE, false);
 renderer.setPixelRatio(1);
 
 container.appendChild(renderer.domElement);
 
-/* =========================
-   STABLE RESIZE FUNCTION
-========================= */
+/* center canvas manually */
+renderer.domElement.style.position = "absolute";
+renderer.domElement.style.top = "50%";
+renderer.domElement.style.left = "50%";
+renderer.domElement.style.transform = "translate(-50%, -50%)";
 
-function resize() {
-  const width = container.clientWidth;
-  const height = container.clientHeight;
-
-  renderer.setSize(width, height, false);
-
-  camera.aspect = width / height;
-  camera.updateProjectionMatrix();
-}
-
-window.addEventListener("resize", resize);
-resize();
-
-/* =========================
-   LIGHTS
-========================= */
-
+/* LIGHTS */
 scene.add(new THREE.AmbientLight(0xffffff, 1.5));
 
-const light1 = new THREE.PointLight(0xffffff, 2.5);
+const light1 = new THREE.PointLight(0xffffff, 3);
 light1.position.set(3, 3, 3);
 scene.add(light1);
 
@@ -92,11 +67,8 @@ const light2 = new THREE.PointLight(0xd4a97a, 2);
 light2.position.set(-3, -2, 2);
 scene.add(light2);
 
-/* =========================
-   CRYSTAL CORE
-========================= */
-
-const geometry = new THREE.SphereGeometry(1, 96, 96);
+/* CRYSTAL */
+const geometry = new THREE.SphereGeometry(1, 128, 128);
 
 const material = new THREE.MeshPhysicalMaterial({
   color: 0xf5f0e8,
@@ -106,7 +78,6 @@ const material = new THREE.MeshPhysicalMaterial({
   thickness: 2.5,
   ior: 1.5,
   clearcoat: 1,
-  clearcoatRoughness: 0.05,
   emissive: new THREE.Color(0xb8936a),
   emissiveIntensity: 0.2
 });
@@ -114,19 +85,16 @@ const material = new THREE.MeshPhysicalMaterial({
 const core = new THREE.Mesh(geometry, material);
 scene.add(core);
 
-/* =========================
-   SMOOTH ANIMATION (NO JITTER)
-========================= */
-
+/* FIXED ANIMATION (NO SCALE DEPENDENCY ON FRAME SIZE) */
 function animate() {
   requestAnimationFrame(animate);
 
   const t = performance.now() * 0.001;
 
-  core.rotation.y = Math.sin(t * 0.3) * 0.5;
-  core.rotation.x = Math.cos(t * 0.2) * 0.2;
+  core.rotation.y = t * 0.3;
+  core.rotation.x = Math.sin(t * 0.5) * 0.2;
 
-  const breathe = 1 + Math.sin(t * 1.2) * 0.03;
+  const breathe = 1 + Math.sin(t * 1.5) * 0.03;
   core.scale.set(breathe, breathe, breathe);
 
   renderer.render(scene, camera);
