@@ -1,29 +1,128 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>ATEEM TEST</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>ATEEM Crystal AI</title>
+
 <style>
-body {
+html, body {
   margin: 0;
-  background: black;
-  color: white;
-  font-size: 30px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
+  height: 100%;
+  overflow: hidden;
+  background: radial-gradient(circle at center, #0b0f1a, #05070d);
+}
+
+canvas {
+  display: block;
 }
 </style>
 </head>
 
 <body>
 
-ATEEM IS RUNNING ✔
+<!-- Three.js -->
+<script src="https://unpkg.com/three@0.160.0/build/three.min.js"></script>
 
 <script>
-alert("JS IS WORKING");
-console.log("ATEEM JS OK");
+/* =========================
+   SCENE SETUP
+========================= */
+
+const scene = new THREE.Scene();
+
+/* CAMERA */
+const camera = new THREE.PerspectiveCamera(
+  50,
+  window.innerWidth / window.innerHeight,
+  0.1,
+  100
+);
+camera.position.z = 3.2;
+
+/* RENDERER */
+const renderer = new THREE.WebGLRenderer({
+  antialias: true,
+  alpha: true
+});
+
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.setPixelRatio(window.devicePixelRatio);
+renderer.setClearColor(0x000000, 0);
+
+document.body.appendChild(renderer.domElement);
+
+/* =========================
+   LIGHTING SYSTEM
+========================= */
+
+scene.add(new THREE.AmbientLight(0xffffff, 1.6));
+
+const light1 = new THREE.PointLight(0xffffff, 3);
+light1.position.set(5, 5, 5);
+scene.add(light1);
+
+const light2 = new THREE.PointLight(0xd4a97a, 2.5);
+light2.position.set(-5, -2, 3);
+scene.add(light2);
+
+const light3 = new THREE.PointLight(0x88cfff, 1.5);
+light3.position.set(0, 5, -5);
+scene.add(light3);
+
+/* =========================
+   CRYSTAL CORE (FINAL)
+========================= */
+
+const geometry = new THREE.SphereGeometry(1, 160, 160);
+
+const material = new THREE.MeshPhysicalMaterial({
+  color: 0xf5f0e8,
+
+  roughness: 0.03,
+  metalness: 0.0,
+
+  transmission: 1.0,
+  thickness: 3,
+
+  ior: 1.5,
+  clearcoat: 1.0,
+  clearcoatRoughness: 0.02,
+
+  emissive: new THREE.Color(0xb8936a),
+  emissiveIntensity: 0.25
+});
+
+const core = new THREE.Mesh(geometry, material);
+scene.add(core);
+
+/* =========================
+   ANIMATION LOOP
+========================= */
+
+function animate() {
+  requestAnimationFrame(animate);
+
+  core.rotation.y += 0.0025;
+  core.rotation.x += 0.0012;
+
+  const breathe = 1 + Math.sin(Date.now() * 0.0022) * 0.05;
+  core.scale.set(breathe, breathe, breathe);
+
+  renderer.render(scene, camera);
+}
+
+animate();
+
+/* =========================
+   RESPONSIVE FIX
+========================= */
+
+window.addEventListener("resize", () => {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+});
 </script>
 
 </body>
