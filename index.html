@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>ATEEM Crystal AI</title>
+<title>ATEEM Crystal Stable</title>
 
 <style>
 html, body {
@@ -21,17 +21,15 @@ canvas {
 
 <body>
 
-<!-- Three.js -->
 <script src="https://unpkg.com/three@0.160.0/build/three.min.js"></script>
 
 <script>
-/* =========================
-   SCENE SETUP
-========================= */
+/* ======================
+   FIXED STABLE SETUP
+====================== */
 
 const scene = new THREE.Scene();
 
-/* CAMERA */
 const camera = new THREE.PerspectiveCamera(
   50,
   window.innerWidth / window.innerHeight,
@@ -40,73 +38,69 @@ const camera = new THREE.PerspectiveCamera(
 );
 camera.position.z = 3.2;
 
-/* RENDERER */
 const renderer = new THREE.WebGLRenderer({
   antialias: true,
-  alpha: true
+  alpha: true,
+  powerPreference: "high-performance"
 });
 
+/* 🔥 IMPORTANT FIX */
+renderer.setPixelRatio(1); // 👈 يمنع الاهتزاز داخل iframe
 renderer.setSize(window.innerWidth, window.innerHeight);
-renderer.setPixelRatio(window.devicePixelRatio);
 renderer.setClearColor(0x000000, 0);
 
 document.body.appendChild(renderer.domElement);
 
-/* =========================
-   LIGHTING SYSTEM
-========================= */
+/* ======================
+   LIGHTS (STABLE)
+====================== */
 
-scene.add(new THREE.AmbientLight(0xffffff, 1.6));
+scene.add(new THREE.AmbientLight(0xffffff, 1.4));
 
-const light1 = new THREE.PointLight(0xffffff, 3);
-light1.position.set(5, 5, 5);
+const light1 = new THREE.PointLight(0xffffff, 2.5);
+light1.position.set(3, 3, 3);
 scene.add(light1);
 
-const light2 = new THREE.PointLight(0xd4a97a, 2.5);
-light2.position.set(-5, -2, 3);
+const light2 = new THREE.PointLight(0xd4a97a, 2);
+light2.position.set(-3, -2, 2);
 scene.add(light2);
 
-const light3 = new THREE.PointLight(0x88cfff, 1.5);
-light3.position.set(0, 5, -5);
-scene.add(light3);
+/* ======================
+   CRYSTAL CORE
+====================== */
 
-/* =========================
-   CRYSTAL CORE (FINAL)
-========================= */
-
-const geometry = new THREE.SphereGeometry(1, 160, 160);
+const geometry = new THREE.SphereGeometry(1, 96, 96);
 
 const material = new THREE.MeshPhysicalMaterial({
   color: 0xf5f0e8,
-
-  roughness: 0.03,
+  roughness: 0.05,
   metalness: 0.0,
-
   transmission: 1.0,
-  thickness: 3,
-
+  thickness: 2.5,
   ior: 1.5,
-  clearcoat: 1.0,
-  clearcoatRoughness: 0.02,
-
+  clearcoat: 1,
+  clearcoatRoughness: 0.05,
   emissive: new THREE.Color(0xb8936a),
-  emissiveIntensity: 0.25
+  emissiveIntensity: 0.2
 });
 
 const core = new THREE.Mesh(geometry, material);
 scene.add(core);
 
-/* =========================
-   ANIMATION LOOP
-========================= */
+/* ======================
+   FIXED ANIMATION
+====================== */
 
 function animate() {
   requestAnimationFrame(animate);
 
-  core.rotation.y += 0.0025;
-  core.rotation.x += 0.0012;
+  /* 🔥 smooth rotation (no jitter) */
+  core.rotation.y += 0.002;
+  core.rotation.x += 0.001;
 
-  const breathe = 1 + Math.sin(Date.now() * 0.0022) * 0.05;
+  /* 🔥 smooth breathing */
+  const t = performance.now() * 0.001;
+  const breathe = 1 + Math.sin(t) * 0.03;
   core.scale.set(breathe, breathe, breathe);
 
   renderer.render(scene, camera);
@@ -114,9 +108,9 @@ function animate() {
 
 animate();
 
-/* =========================
-   RESPONSIVE FIX
-========================= */
+/* ======================
+   RESPONSIVE (SAFE)
+====================== */
 
 window.addEventListener("resize", () => {
   camera.aspect = window.innerWidth / window.innerHeight;
