@@ -2,82 +2,28 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>ATEEM DEBUG</title>
-
+<title>ATEEM TEST</title>
 <style>
-html, body {
+body {
   margin: 0;
-  height: 100%;
-  overflow: hidden;
-  background: #05070d;
+  background: black;
   color: white;
-  font-family: Arial;
-}
-
-#log {
-  position: absolute;
-  top: 10px;
-  left: 10px;
-  z-index: 10;
-  font-size: 14px;
+  font-size: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
 }
 </style>
 </head>
 
 <body>
 
-<div id="log">Starting...</div>
-
-<!-- IMPORTANT CDN CHECK -->
-<script src="https://unpkg.com/three@0.160.0/build/three.min.js"></script>
+ATEEM IS RUNNING ✔
 
 <script>
-const log = (t) => document.getElementById("log").innerText = t;
-
-log("Checking THREE...");
-
-if (!window.THREE) {
-  log("❌ THREE NOT LOADED (CDN BLOCKED)");
-} else {
-
-  log("✔ THREE LOADED - Starting Scene");
-
-  const scene = new THREE.Scene();
-
-  const camera = new THREE.PerspectiveCamera(
-    70,
-    window.innerWidth/window.innerHeight,
-    0.1,
-    100
-  );
-  camera.position.z = 3;
-
-  const renderer = new THREE.WebGLRenderer({ antialias:true });
-
-  renderer.setSize(window.innerWidth, window.innerHeight);
-  document.body.appendChild(renderer.domElement);
-
-  const geo = new THREE.SphereGeometry(1, 32, 32);
-  const mat = new THREE.MeshBasicMaterial({ color: 0x00ffcc });
-
-  const mesh = new THREE.Mesh(geo, mat);
-  scene.add(mesh);
-
-  function animate(){
-    requestAnimationFrame(animate);
-    mesh.rotation.y += 0.02;
-    renderer.render(scene, camera);
-  }
-
-  animate();
-
-  log("🟢 RUNNING SUCCESSFULLY");
-
-}
-
-window.addEventListener("resize", () => {
-  location.reload();
-});
+alert("JS IS WORKING");
+console.log("ATEEM JS OK");
 </script>
 
 </body>
